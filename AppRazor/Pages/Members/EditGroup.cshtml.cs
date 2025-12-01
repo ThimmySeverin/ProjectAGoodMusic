@@ -134,7 +134,8 @@ namespace AppRazor.Pages
         public IActionResult OnPostAddAlbum()
         {
             string[] keys = { "MusicGroupInput.NewAlbum.ReleaseYear",
-                              "MusicGroupInput.NewAlbum.AlbumName"};
+                              "MusicGroupInput.NewAlbum.AlbumName", 
+                              "MusicGroupInput.NewAlbum.CopiesSold"};
 
             if (!ModelState.IsValidPartially(out ModelValidationResult validationResult, keys))
             {
@@ -180,6 +181,7 @@ namespace AppRazor.Pages
             //Implement the changes
             a.AlbumName = a.editAlbumName;
             a.ReleaseYear = a.editReleaseYear;
+            a.CopiesSold = a.editCopiesSold;
 
             return Page();
         }
@@ -342,7 +344,7 @@ namespace AppRazor.Pages
         //that are bound to the <form> tag
         //EVERY property must be bound to an <input> tag in the <form>
         //These classes are in center of ModelBinding and Validation
-        public enum StatusIM { Unknown, Unchanged, Inserted, Modified, Deleted}
+        public enum StatusIM { Unknown, Unchanged, Inserted, Modified, Deleted }
         public class ArtistIM
         {
             public StatusIM StatusIM { get; set; }
@@ -380,7 +382,7 @@ namespace AppRazor.Pages
                 FirstName = editFirstName = model.FirstName;
                 LastName = editLastName = model.LastName;
             }
-            
+
             //to update the model in database
             public IArtist UpdateModel(IArtist model)
             {
@@ -391,7 +393,8 @@ namespace AppRazor.Pages
             }
 
             //to create new artist in the database
-            public ArtistCUdto CreateCUdto () => new ArtistCUdto(){
+            public ArtistCUdto CreateCUdto() => new ArtistCUdto()
+            {
 
                 ArtistId = null,
                 FirstName = this.FirstName,
@@ -417,6 +420,11 @@ namespace AppRazor.Pages
             [Range(1900, 2024, ErrorMessage = "You must provide a year between 1900 and 2024")]
             public int editReleaseYear { get; set; }
 
+            public long CopiesSold { get; set; }
+
+            public long editCopiesSold { get; set; }
+
+
             public AlbumIM() { }
             public AlbumIM(AlbumIM original)
             {
@@ -424,10 +432,12 @@ namespace AppRazor.Pages
                 AlbumId = original.AlbumId;
                 AlbumName = original.AlbumName;
                 ReleaseYear = original.ReleaseYear;
+                CopiesSold = original.CopiesSold;
 
 
                 editAlbumName = original.editAlbumName;
                 editReleaseYear = original.editReleaseYear;
+                editCopiesSold = original.editCopiesSold;
             }
             public AlbumIM(IAlbum model)
             {
@@ -435,23 +445,30 @@ namespace AppRazor.Pages
                 AlbumId = model.AlbumId;
                 AlbumName = editAlbumName = model.Name;
                 ReleaseYear = editReleaseYear = model.ReleaseYear;
+                CopiesSold = editCopiesSold = model.CopiesSold;
+
             }
-            
+
             //to update the model in database
             public IAlbum UpdateModel(IAlbum model)
             {
                 model.AlbumId = this.AlbumId;
                 model.Name = this.AlbumName;
                 model.ReleaseYear = this.ReleaseYear;
+                model.CopiesSold = this.CopiesSold;
                 return model;
             }
 
             //to create new album in the database
-            public AlbumCUdto CreateCUdto () => new AlbumCUdto(){
+            public AlbumCUdto CreateCUdto() => new AlbumCUdto()
+            {
 
                 AlbumId = null,
                 Name = this.AlbumName,
-                ReleaseYear = this.ReleaseYear
+                ReleaseYear = this.ReleaseYear,
+                CopiesSold = this.CopiesSold
+                
+                
             };
         }
         public class MusicGroupIM
@@ -463,7 +480,7 @@ namespace AppRazor.Pages
             [Required(ErrorMessage = "You must provide a group name")]
             public string Name { get; set; }
 
-            [Range (1900, 2024, ErrorMessage = "You must provide a year between 1900 and 2024")]
+            [Range(1900, 2024, ErrorMessage = "You must provide a year between 1900 and 2024")]
             public int EstablishedYear { get; set; }
 
             //Made nullable and required to force user to make an active selection when creating new group
@@ -473,7 +490,7 @@ namespace AppRazor.Pages
             public List<AlbumIM> Albums { get; set; } = new List<AlbumIM>();
             public List<ArtistIM> Artists { get; set; } = new List<ArtistIM>();
 
-            public MusicGroupIM() {}
+            public MusicGroupIM() { }
             public MusicGroupIM(IMusicGroup model)
             {
                 StatusIM = StatusIM.Unchanged;
@@ -496,8 +513,9 @@ namespace AppRazor.Pages
             }
 
             //to create new music group in the database
-            public MusicGroupCUdto CreateCUdto () => new (){
-                
+            public MusicGroupCUdto CreateCUdto() => new()
+            {
+
                 MusicGroupId = null,
                 Name = this.Name,
                 EstablishedYear = this.EstablishedYear,
@@ -508,7 +526,7 @@ namespace AppRazor.Pages
             public AlbumIM NewAlbum { get; set; } = new AlbumIM();
 
             //to allow a new album being specified and bound in the form
-            public ArtistIM NewArtist { get; set; } = new ArtistIM();         
+            public ArtistIM NewArtist { get; set; } = new ArtistIM();
         }
         #endregion
     }
